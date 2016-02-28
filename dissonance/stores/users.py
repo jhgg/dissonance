@@ -13,6 +13,8 @@ class UserStore(ObjectHolder):
             for member in guild['members']:
                 self.upsert(member['user'])
 
+        self.upsert(ready_packet['user'])
+
     @handler(events.MESSAGE_CREATE)
     def handle_message_create(self, message_data):
         if 'author' in message_data:

@@ -14,6 +14,7 @@ class Client(object):
         self.events = EventEmitter()
         self.api_client = APIClient(self)
         self.stores = Stores(self)
+        self.me = None
 
     def login(self, email, password):
         self.api_client.login(email, password)
@@ -41,6 +42,8 @@ class Client(object):
             handler_fn(data)
 
     def handle_ready(self, data):
+        print('ready', data.keys())
+        self.me = self.stores.users.with_id(data['user']['id'])
         self.emit('ready', ready_data=data)
 
     def handle_message_create(self, message):
