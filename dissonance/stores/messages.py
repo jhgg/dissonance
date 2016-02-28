@@ -19,6 +19,11 @@ class MessageStore(ObjectHolder):
         message = self.upsert(message_data)
         self._messages[message.channel_id].append(message)
 
+    @handler(events.MESSAGE_UPDATE)
+    @wait_for('users')
+    def handle_message_create(self, message_data):
+        self.update(message_data)
+
     def make_object(self, data):
         # noinspection PyCallingNonCallable
         return self.object_class(self._stores, data['id'], data['channel_id'])
