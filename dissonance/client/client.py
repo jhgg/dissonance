@@ -1,6 +1,5 @@
 from .api_client import APIClient
 from .gateway_socket import GatewaySocket
-
 from ..lib.event_emitter import EventEmitter
 from ..stores import Stores, autodiscover
 
@@ -20,11 +19,16 @@ class Client(object):
         self.api_client.login(email, password)
         return self
 
-    def connect(self):
+    def start(self):
         gateway = self.api_client.discover_gateway()
         self._gateway_socket = GatewaySocket(gateway, self)
         self._gateway_socket.start()
         return self
+
+    def stop(self):
+        if self._gateway_socket:
+            self._gateway_socket.kill()
+            self._gateway_socket = None
 
     def join(self):
         if self._gateway_socket:
@@ -59,3 +63,9 @@ class Client(object):
         Manhole(self).start(9001)
 
         return self
+
+    def send_message(self, channel, message):
+        """
+            Convenience function to send a message to a channel.
+        """
+        return self.api_client.create_message(channel.id, message)

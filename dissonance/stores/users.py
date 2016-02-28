@@ -16,6 +16,6 @@ class UserStore(ObjectHolder):
         self.upsert(ready_packet['user'])
 
     @handler(events.MESSAGE_CREATE, events.MESSAGE_UPDATE)
-    def handle_message_create(self, message_data):
+    def handle_message(self, message_data):
         if 'author' in message_data:
             self.upsert(message_data['author'])

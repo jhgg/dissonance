@@ -1,18 +1,21 @@
 import glob
 import os.path
 from weakref import WeakValueDictionary
-
 from ..lib.store import BaseStores, BaseStore, wait_for, handler
 
 
 class Stores(BaseStores):
     _known_stores = {}
 
+    def __init__(self, client, *args, **kwargs):
+        self.client = client
+        super(Stores, self).__init__(client, *args, **kwargs)
+
 
 class Store(BaseStore):
     def __init__(self, stores, client):
         super(Store, self).__init__(stores)
-        self._client = client
+        self.client = client
 
 
 class ObjectHolder(Store):

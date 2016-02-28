@@ -1,3 +1,6 @@
+import random
+
+
 class Message(object):
     attachments = None
     author_id = None
@@ -7,6 +10,9 @@ class Message(object):
     mention_everyone = None
     timestamp = None
     edited_timestamp = None
+    tokens = None
+
+    is_direct_message = False
 
     def __init__(self, stores, id, channel_id):
         self._stores = stores
@@ -23,6 +29,7 @@ class Message(object):
 
     def update(self, message_data):
         self.content = message_data.get('content', self.content)
+        self.tokens = self.content.split()
         self.mentions = message_data.get('mentions', self.mentions)
         self.mention_everyone = bool(message_data.get('mention_everyone', self.mention_everyone))
         self.embeds = message_data.get('embeds', self.embeds)
@@ -34,3 +41,18 @@ class Message(object):
 
     def __repr__(self):
         return u'<Message author: %r, channel: %r, content: %r>' % (self.author, self.channel, self.content)
+
+    def reply_to_user(self, message):
+        if not self.is_direct_message:
+            message = '%s: %s' % (self.author.username, message)
+
+        return self.reply(message)
+
+    def reply(self, message):
+        return self._stores.client.send_message(self.channel, message)
+
+    def reply_random(self, choices):
+        return self.reply_to_user(random.choice(choices))
+
+    def reply_with_one_of(self, *choices):
+        return self.reply_random(choices)

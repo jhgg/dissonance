@@ -1,0 +1,86 @@
+#! python
+import argparse
+from importlib import import_module
+import os
+import sys
+import dissonance
+
+parser = argparse.ArgumentParser(prog='dissonance', description='Dissonance')
+
+subparsers = parser.add_subparsers(dest='command')
+init_parser = subparsers.add_parser('init', help="Initializes an instance of dissonance")
+init_parser.add_argument('directory')
+run_parser = subparsers.add_parser('run', help="Initializes an instance of dissonance")
+run_parser.add_argument('--config', default='config.py')
+
+chkconfig_parser = subparsers.add_parser('chkconfig',
+                                         help="Checks the config of Dissonance to make sure there are no errors.")
+chkconfig_parser.add_argument('--config', default='config.py')
+
+modopts_parser = subparsers.add_parser('modopts',
+                                       help="Shows the configuration available for the modules to be loaded.")
+modopts_parser.add_argument('--config', default='config.py')
+
+
+class Error(Exception):
+    def __init__(self, message):
+        self.message = message
+        super(Error, self).__init__(message)
+
+
+def init(ns):
+    import shutil
+
+    try:
+        import_module(ns.directory)
+    except ImportError:
+        pass
+    else:
+        raise Error("%r conflicts with the name of an existing "
+                    "Python module and cannot be used as the name "
+                    "of the dissonance directory." % ns.directory)
+
+    if os.path.exists(ns.directory):
+        raise Error("Directory %r already exists." % ns.directory)
+
+    starter_template_path = os.path.join(dissonance.__path__[0], 'starter_template')
+    shutil.copytree(starter_template_path, ns.directory, ignore=shutil.ignore_patterns("*.pyc"))
+    print("Initialized dissonance in", ns.directory)
+    print("You should now be able to change directory to it and then run 'dissonance run'")
+
+
+def _find_config(ns):
+    if os.getcwd() not in sys.path:
+        sys.path.insert(0, os.getcwd())
+
+    import imp
+
+    try:
+        config = imp.load_source('config', ns.config)
+    except IOError:
+        config = object()
+
+    return config
+
+
+def run(ns):
+    config = _find_config(ns)
+    dissonance.run(config)
+
+
+def chkconfig(ns):
+    config = _find_config(ns)
+    dissonance.chkconfig(config)
+
+
+def modopts(ns):
+    config = _find_config(ns)
+    dissonance.modopts(config)
+
+
+try:
+    ns = parser.parse_args(sys.argv[1:])
+    globals()[ns.command](ns)
+
+except Error as e:
+    sys.stderr.write("ERROR: %s\n" % e.message)

@@ -17,8 +17,10 @@ def on_message_create(client, message):
         return
 
     print('omc', message)
-    if 'doot' in message.content:
-        client.api_client.create_message(message.channel_id, 'doot doot')
+    # if 'doot' in message.content:
+    #     client.api_client.create_message(message.channel_id, 'doot doot')
+    if 'doot mcount' in message.content:
+        client.api_client.create_message(message.channel_id, 'doot doot i am storing %s messages' % len(client.stores.messages))
 
 
 @partial(client.events.on, 'ready')
