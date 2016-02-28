@@ -1,6 +1,6 @@
 # Environment Variables
 
-Jeev can be configured with a python file, or directly from environment variables. This document lists all of the 
+Dissonance can be configured with a python file, or directly from environment variables. This document lists all of the
 configuration options that can be set to configure Jeev.
 
 ## Dissonance Core
@@ -9,13 +9,13 @@ configuration options that can be set to configure Jeev.
     * Builtin options: `shelve`, `redis`
     * Default: `shelve`
     
-* `DISSONANCE_MODULES`: A comma seperated list of modules to load.
+* `DISSONANCE_MODULES`: A comma separated list of modules to load.
     * Default: ``
     * Example: `facts,eightball`
 
 ## Jeev Web-Server
 
-* `DISSONANCE_WEB`: Should Jeev run it's built in web-server, that will allow modules to define web endpoints?
+* `DISSONANCE_WEB`: Should Dissonance run it's built in web-server, that will allow modules to define web endpoints?
     * Default: `FALSE`
     * Possible Values: `FALSE`, `TRUE`
     

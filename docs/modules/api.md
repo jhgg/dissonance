@@ -12,7 +12,7 @@ A read only dictionary of options passed to the module (either via the config fi
 values of this dictionary are strings.
 
 ### `module.data`
-A persistent data store, that stores data using `SLACK_STORAGE`.
+A persistent data store, that stores data using `DISSONANCE_STORAGE`.
 
 #### Example
 ```python
