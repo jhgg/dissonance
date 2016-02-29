@@ -65,14 +65,14 @@ class Guild(object):
 
     def __init__(self, id, channels, **kwargs):
         self.id = int(id)
+        self.channels = channels
         self.__dict__.update(kwargs)
 
     @classmethod
-    def from_ready_packet(cls, stores, data):
-        data['roles'] = roles = Guild.parse_roles(stores, data['roles'])
-        data['channels'] = stores.channels.in_bulk(c['id'] for c in data['channels'])
-        g = Guild(**data)
-        return g
+    def from_ready_packet(cls, stores, **kwargs):
+        kwargs['roles'] = Guild.parse_roles(stores, kwargs['roles'])
+        kwargs['channels'] = stores.channels.in_bulk(c['id'] for c in kwargs['channels'])
+        return Guild(**kwargs)
 
     def __repr__(self):
         return u'<Guild %s (%s)>' % (self.name, self.id)

@@ -9,6 +9,7 @@ class DispatcherContext(object):
         self._pending = set()
         self._current_args = None
         self._current_kwargs = None
+        self._failures = 0
 
     def add(self, store, handler):
         self._callbacks[store].append(handler)
@@ -18,6 +19,7 @@ class DispatcherContext(object):
         self._pending.clear()
         self._current_args = args
         self._current_kwargs = kwargs
+        self._failures = 0
 
         try:
             for store in self._callbacks:
@@ -26,11 +28,14 @@ class DispatcherContext(object):
 
                 self.invoke_callbacks(store)
 
+            return self._failures
+
         finally:
             self._handled.clear()
             self._pending.clear()
             self._current_args = None
             self._current_kwargs = None
+            self._failures = 0
 
     def invoke_callbacks(self, store):
         if store not in self._callbacks:
@@ -49,6 +54,7 @@ class DispatcherContext(object):
                 callback(*self._current_args, **self._current_kwargs)
 
             except:
+                self._failures += 1
                 traceback.print_exc()
 
         self._handled.add(store)
@@ -68,6 +74,10 @@ class Dispatcher(object):
     def __init__(self):
         self._contexts = collections.defaultdict(DispatcherContext)
         self._dispatching = False
+        self._linked_event_emitter = None
+
+    def link_events(self, event_emitter):
+        self._linked_event_emitter = event_emitter
 
     def dispatch(self, action, *args, **kwargs):
         if self._dispatching:
@@ -79,9 +89,14 @@ class Dispatcher(object):
         self._dispatching = True
         context = self._contexts[action]
         try:
-            context.dispatch(*args, **kwargs)
+            failures = context.dispatch(*args, **kwargs)
         finally:
             self._dispatching = False
+
+        if self._linked_event_emitter:
+            self._linked_event_emitter.emit(action, *args, **kwargs)
+
+        return failures
 
     def on(self, store, event, handler):
         self._contexts[event].add(store, handler)

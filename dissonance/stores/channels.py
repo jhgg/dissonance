@@ -12,6 +12,27 @@ class ChannelStore(ObjectHolder):
                 channel['guild_id'] = guild['id']
                 self.upsert(channel)
 
+    @handler(events.CHANNEL_CREATE, events.CHANNEL_UPDATE)
+    def handle_channel_create_or_update(self, channel):
+        self.upsert(channel)
+
+    @handler(events.GUILD_CREATE)
+    def handle_guild_create(self, guild):
+        for channel in guild['channels']:
+            channel['guild_id'] = guild['id']
+            self.upsert(channel)
+
+    @handler(events.GUILD_DELETE)
+    def handle_guild_create(self, guild):
+        guild_id = guild['id']
+        for channel_id, channel in list(self.items()):
+            if channel.guild_id == guild_id:
+                self.delete(channel.id)
+
+    @handler(events.CHANNEL_DELETE)
+    def handle_channel_delete(self, channel):
+        self.delete(channel)
+
     def make_object(self, data):
         type = data['type']
         id = data['id']

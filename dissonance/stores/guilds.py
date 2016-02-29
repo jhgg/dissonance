@@ -11,7 +11,8 @@ class GuildStore(ObjectHolder):
     @wait_for('channels', 'users')
     def handle_ready(self, ready_packet):
         for guild in ready_packet['guilds']:
-            self.add(Guild.from_ready_packet(self._stores, guild))
+            self.add(Guild.from_ready_packet(self._stores, **guild))
+            print('pg', guild)
 
     def add(self, guild):
         self._objects[guild.id] = guild

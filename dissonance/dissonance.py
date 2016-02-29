@@ -1,10 +1,9 @@
 import logging
-import re
 import gevent
 import time
 from gevent.event import Event
 from .utils.periodic import Periodic
-from .storage import get_store_by_name
+from .storage import get_storage_by_name
 from .web import Web
 from .module import Modules
 from .utils.env import EnvFallbackDict
@@ -17,12 +16,13 @@ logger = logging.getLogger('dissonance.dissonance')
 class Dissonance(object):
     _name = None
     _web = None
+    _manhole = None
 
     def __init__(self, config):
         opts_for = lambda name: EnvFallbackDict(name, getattr(config, '%s_opts' % name, {}))
 
         self._opts = EnvFallbackDict(None, getattr(config, 'dissonance_opts', {}))
-        storage_class = get_store_by_name(self._opts.get('storage', getattr(config, 'storage', 'shelve')))
+        storage_class = get_storage_by_name(self._opts.get('storage', getattr(config, 'storage', 'shelve')))
 
         self.config = config
         self.client = Client()
@@ -36,7 +36,10 @@ class Dissonance(object):
 
         self.client.events.on('message-create', self._handle_message)
 
-    def _handle_message(self, message, **kwargs):
+    def _handle_message(self, message, client):
+        if message.author == client.me:
+            return
+
         # Schedule the handling of the message to occur during the next iteration of the event loop.
         gevent.spawn_raw(self.__handle_message, message)
 
@@ -94,6 +97,18 @@ class Dissonance(object):
             self._web = Web(self, EnvFallbackDict('web', getattr(self.config, 'web_opts', {})))
             self._web.start()
 
+        if getattr(self.config, 'manhole', False):
+            from gevent.backdoor import BackdoorServer
+            manhole_opts = EnvFallbackDict('manhole', getattr(self.config, 'manhole_opts', {}))
+            self._manhole = BackdoorServer((
+                manhole_opts.get('listen_host', '127.0.0.1'),
+                int(manhole_opts.get('listen_port', 9001))
+            ), locals={
+                'client': self.client
+            })
+
+            self._manhole.start()
+
         logger.info("Attempting to log in as %s" % self._opts['email'])
         self.client.login(self._opts['email'], self._opts['password'])
         logger.info("Starting connection to Discord")
@@ -129,6 +144,10 @@ class Dissonance(object):
             if self._web:
                 self._web.stop()
                 self._web = None
+
+            if self._manhole:
+                self._manhole.stop()
+                self._manhole = None
 
             self.client.stop()
             self._storage_sync_periodic.stop()

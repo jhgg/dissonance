@@ -1,6 +1,7 @@
 import glob
 import os.path
 from weakref import WeakValueDictionary
+from dissonance.lib.functional import once
 from ..lib.store import BaseStores, BaseStore, wait_for, handler
 
 
@@ -16,6 +17,10 @@ class Store(BaseStore):
     def __init__(self, stores, client):
         super(Store, self).__init__(stores)
         self.client = client
+
+
+def _true(_):
+    return True
 
 
 class ObjectHolder(Store):
@@ -47,16 +52,25 @@ class ObjectHolder(Store):
     def clear(self):
         self._objects.clear()
 
+    def delete(self, obj_or_id):
+        if isinstance(obj_or_id, dict):
+            obj_or_id = int(obj_or_id['id'])
+
+        self._objects.pop(obj_or_id)
+
+    def items(self):
+        return self._objects.items()
+
     def with_id(self, id, default=None):
         return self._objects.get(int(id), default)
 
-    def find_one(self, predicate, default=None):
+    def find_one(self, predicate=_true, default=None):
         return next((obj for obj in self._objects.values() if predicate(obj)), default)
 
-    def find_all(self, predicate):
+    def find_all(self, predicate=_true):
         return [obj for obj in self._objects.values() if predicate(obj)]
 
-    def find_iter(self, predicate):
+    def find_iter(self, predicate=_true):
         return (obj for obj in self._objects.values() if predicate(obj))
 
     def in_bulk(self, ids):
@@ -64,7 +78,7 @@ class ObjectHolder(Store):
         for obj_id in ids:
             obj_id = int(obj_id)
 
-            obj = self._objects.get(id)
+            obj = self._objects.get(obj_id)
             if obj is not None:
                 result[obj_id] = obj
 
@@ -78,6 +92,7 @@ class ObjectHolder(Store):
         return len(self._objects)
 
 
+@once
 def autodiscover():
     path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '*.py')
     stores = glob.glob(path)

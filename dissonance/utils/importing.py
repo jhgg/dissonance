@@ -79,7 +79,7 @@ def import_first_matching_module(mod_name, matches, try_mod_name=True, pre_impor
             sys.modules.pop(match_name, None)
 
             if _is_right_import_error(match_name, exc_info[2]):
-                raise exc_info
+                raise
         finally:
 
             if post_import_hook:

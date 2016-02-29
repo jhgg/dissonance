@@ -1,0 +1,115 @@
+{
+  "guilds": [
+    {
+      "afk_channel_id": null,
+      "afk_timeout": 300,
+      "channels": [
+        {
+          "id": "153648966053920768",
+          "last_message_id": null,
+          "name": "general",
+          "permission_overwrites": [],
+          "position": 0,
+          "topic": null,
+          "type": "text"
+        },
+        {
+          "bitrate": 64000,
+          "id": "153648966053920769",
+          "last_message_id": null,
+          "name": "General",
+          "permission_overwrites": [],
+          "position": 0,
+          "type": "voice"
+        }
+      ],
+      "emojis": [],
+      "features": [],
+      "icon": null,
+      "id": "153648966053920768",
+      "joined_at": "2016-02-28T23:46:08.170000+00:00",
+      "large": false,
+      "member_count": 1,
+      "members": [
+        {
+          "deaf": false,
+          "joined_at": "2016-02-28T23:46:08.170000+00:00",
+          "mute": false,
+          "roles": [],
+          "user": {
+            "avatar": null,
+            "discriminator": "7751",
+            "id": "153648786160353280",
+            "username": "Bot Test"
+          }
+        }
+      ],
+      "name": "test server",
+      "owner_id": "153648786160353280",
+      "presences": [
+        {
+          "game": null,
+          "status": "online",
+          "user": {
+            "id": "153648786160353280"
+          }
+        }
+      ],
+      "region": "us-south",
+      "roles": [
+        {
+          "color": 0,
+          "hoist": false,
+          "id": "153648966053920768",
+          "managed": false,
+          "name": "@everyone",
+          "permissions": 36953089,
+          "position": -1
+        }
+      ],
+      "splash": null,
+      "verification_level": 0,
+      "voice_states": [
+        {
+          "channel_id": "153648966053920769",
+          "deaf": false,
+          "mute": false,
+          "self_deaf": false,
+          "self_mute": true,
+          "session_id": "9915843f96c519b39fff22382aa7b5c6",
+          "suppress": false,
+          "user_id": "153648786160353280"
+        }
+      ]
+    }
+  ],
+  "heartbeat_interval": 41250,
+  "private_channels": [],
+  "read_state": [],
+  "session_id": "38a7e81346be09d3009a534c4fa12023",
+  "tutorial": {
+    "indicators_confirmed": [],
+    "indicators_suppressed": false
+  },
+  "user": {
+    "avatar": null,
+    "discriminator": "7751",
+    "email": "me+test@jh.gg",
+    "id": "153648786160353280",
+    "username": "Bot Test",
+    "verified": false
+  },
+  "user_guild_settings": [],
+  "user_settings": {
+    "convert_emoticons": true,
+    "enable_tts_command": true,
+    "inline_attachment_media": true,
+    "inline_embed_media": true,
+    "locale": "en-US",
+    "message_display_compact": false,
+    "render_embeds": true,
+    "show_current_game": true,
+    "theme": "light"
+  },
+  "v": 3
+}

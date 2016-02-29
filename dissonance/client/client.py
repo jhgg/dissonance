@@ -13,7 +13,9 @@ class Client(object):
         self.events = EventEmitter()
         self.api_client = APIClient(self)
         self.stores = Stores(self)
+        self.stores.dispatcher.link_events(self.events)
         self.me = None
+        self.scheduled_greenlets = set()
 
     def login(self, email, password):
         self.api_client.login(email, password)
@@ -30,6 +32,11 @@ class Client(object):
             self._gateway_socket.kill()
             self._gateway_socket = None
 
+        for greenlet in self.scheduled_greenlets:
+            greenlet.kill()
+
+        self.scheduled_greenlets.clear()
+
     def join(self):
         if self._gateway_socket:
             self._gateway_socket.join()
@@ -38,6 +45,8 @@ class Client(object):
         event = packet['t']
         data = packet['d']
 
+        import json
+        print(json.dumps(data, sort_keys=True, indent=2))
         self.stores.dispatch(event, data)
 
         handler_name = 'handle_%s' % event.lower()
@@ -57,12 +66,12 @@ class Client(object):
     def emit(self, event, **kwargs):
         self.events.emit(event, client=self, **kwargs)
 
-    def start_debug_manhole(self, port):
-        # TODO: Store this somewhere?
-        from dissonance.lib.manhole import Manhole
-        Manhole(self).start(9001)
+    def call_later(self, callback, *args, **kwargs):
+        pass
 
-        return self
+    def cancel_call_later(self, greenlet):
+        self.scheduled_greenlets.discard(greenlet)
+        greenlet.kill()
 
     def send_message(self, channel, message):
         """

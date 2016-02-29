@@ -1,8 +1,6 @@
 import collections
 import traceback
 
-import gevent
-
 
 class EventEmitter(object):
     def __init__(self):
