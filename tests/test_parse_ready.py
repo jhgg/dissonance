@@ -31,6 +31,10 @@ def test_ready_parse_channels(ready_store):
 
 def test_parse_users(ready_store):
     assert len(ready_store.users) == 1
-    user = ready_store.users.find_one()
+    user = ready_store.users.with_id(153648786160353280)
+    assert user.id == 153648786160353280
+    assert user.username == 'Bot Test'
+    assert user.discriminator == 7751
+    assert user.avatar == 'avatar'
 
 

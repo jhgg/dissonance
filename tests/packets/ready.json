@@ -37,7 +37,7 @@
           "mute": false,
           "roles": [],
           "user": {
-            "avatar": null,
+            "avatar": "avatar",
             "discriminator": "7751",
             "id": "153648786160353280",
             "username": "Bot Test"
@@ -92,7 +92,7 @@
     "indicators_suppressed": false
   },
   "user": {
-    "avatar": null,
+    "avatar": "avatar",
     "discriminator": "7751",
     "email": "me+test@jh.gg",
     "id": "153648786160353280",
