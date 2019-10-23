@@ -20,7 +20,7 @@ setup(
     install_requires=[
         'certifi==14.5.14',
         'coloredlogs==1.0.1',
-        'Flask==0.10.1',
+        'Flask==1.0',
         'gevent==1.1rc5',
         'greenlet==0.4.9',
         'requests==2.9.1',
