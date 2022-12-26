@@ -26,7 +26,7 @@ setup(
         'requests==2.9.1',
         'six==1.10.0',
         'websocket-client==0.35.0',
-        'wheel==0.24.0',
+        'wheel==0.38.1',
     ],
     include_package_data=True,
     zip_safe=False,
